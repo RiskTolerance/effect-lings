@@ -2,6 +2,16 @@ import { Effect } from "effect";
 import { check, section } from "../../lib/check";
 section("Transform Effects without running them: .pipe + map (plain values) and flatMap (Effect-returning).");
 
+// Before you start:
+// - Mental model: `map` changes a successful plain value inside an Effect.
+//   `flatMap` is for a callback that returns another Effect, so the result is
+//   flattened instead of becoming an Effect inside an Effect.
+// - Shape to look for: keep building descriptions; do not run them until the
+//   checks.
+// - Docs: v4 API reference:
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html
+//   Concept docs: https://effect.website/docs/getting-started/building-pipelines
+
 const fetchUser = Effect.succeed({ name: "Ada", age: 36 });
 const lookupAge = (name: string) => Effect.succeed(name === "Ada" ? 36 : 0);
 

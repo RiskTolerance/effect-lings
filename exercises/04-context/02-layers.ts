@@ -2,6 +2,16 @@ import { Context, Effect, Layer, Ref } from "effect";
 import { check, section } from "../../lib/check";
 section("Layer.succeed wraps a ready value; Layer.effect BUILDS the service from an Effect — so it can allocate state.");
 
+// Before you start:
+// - Mental model: a Layer is a recipe for building services. `Layer.succeed`
+//   wraps an already-built service; `Layer.effect` can allocate effectful state
+//   while building the service.
+// - Shape to look for: allocate the Ref once during layer construction, then
+//   expose methods that reuse that same Ref for every call.
+// - Docs: v4 API reference:
+//   https://effect-ts.github.io/effect/effect/Layer.ts.html
+//   Concept docs: https://effect.website/docs/requirements-management/layers
+
 class Counter extends Context.Service<
   Counter,
   { readonly next: () => Effect.Effect<number> }

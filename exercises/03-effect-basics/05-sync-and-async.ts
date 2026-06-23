@@ -2,6 +2,16 @@ import { Effect } from "effect";
 import { check, section } from "../../lib/check";
 section("Lifting real work in: sync (never throws), try (might throw), tryPromise (async, might reject).");
 
+// Before you start:
+// - Mental model: constructors lift real work into Effect. `sync` delays
+//   non-throwing sync work, `try` catches thrown sync errors, and `tryPromise`
+//   catches rejected promises.
+// - Shape to look for: wrap work in thunks so it stays lazy and errors land in
+//   the typed error channel.
+// - Docs: v4 API reference:
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html
+//   Concept docs: https://effect.website/docs/getting-started/creating-effects
+
 let calls = 0;
 
 // 📝 TODO: wrap the side effect in Effect.sync so it stays lazy. It should do

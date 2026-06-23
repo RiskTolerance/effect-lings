@@ -2,6 +2,17 @@ import { Effect, Ref } from "effect";
 import { check, section } from "../../lib/check";
 section("Mutable state, the Effect way: a Ref is a typed, fiber-safe cell you read and update with Effects.");
 
+// Before you start:
+// - Mental model: `Ref` is mutable state described and accessed through Effects.
+//   Reads and updates are effects too, so they compose with `Effect.gen` and
+//   stay safe across fibers.
+// - Shape to look for: create the Ref inside the program, yield updates in
+//   order, then yield a final read. `modify` returns one value while storing
+//   another.
+// - Docs: v4 API reference:
+//   https://effect-ts.github.io/effect/effect/Ref.ts.html
+//   Concept docs: https://effect.website/docs/state-management/ref
+
 // 📝 TODO: build a program that:
 //          1. creates a Ref starting at 0        (Ref.make)
 //          2. updates it three times: +1, +1, +5 (Ref.update)

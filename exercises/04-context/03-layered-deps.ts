@@ -2,6 +2,16 @@ import { Context, Effect, Layer } from "effect";
 import { check, section } from "../../lib/check";
 section("Layers depend on layers. A layer that REQUIRES another service is wired up with Layer.provide.");
 
+// Before you start:
+// - Mental model: layers can need other services while they are being built.
+//   That requirement belongs to the layer construction step, not to the service
+//   interface callers use afterward.
+// - Shape to look for: build Greeter from Config, then provide ConfigLive to
+//   GreeterLive so the final runnable program only needs Greeter.
+// - Docs: v4 API reference:
+//   https://effect-ts.github.io/effect/effect/Layer.ts.html
+//   Concept docs: https://effect.website/docs/requirements-management/layers
+
 class Config extends Context.Service<Config, { readonly greeting: string }>()("Config") {}
 class Greeter extends Context.Service<
   Greeter,

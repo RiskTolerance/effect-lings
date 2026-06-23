@@ -2,6 +2,16 @@ import { Context, Effect, Layer } from "effect";
 import { check, section } from "../../lib/check";
 section("A service is an interface stored in the context (the R channel). Yield it to pull the implementation out.");
 
+// Before you start:
+// - Mental model: the `R` channel is a list of services the program needs from
+//   its environment. A service tag is the key used to request an implementation.
+// - Shape to look for: `yield* Greeter` adds a Greeter requirement; providing
+//   `GreeterLive` removes that requirement before running.
+// - Docs: v4 API references:
+//   https://effect-ts.github.io/effect/effect/Context.ts.html
+//   https://effect-ts.github.io/effect/effect/Layer.ts.html
+//   Concept docs: https://effect.website/docs/requirements-management/services
+
 // The service KEY: an identity + the shape of its implementation. Yielding it
 // inside a gen retrieves whatever implementation the context provides.
 class Greeter extends Context.Service<

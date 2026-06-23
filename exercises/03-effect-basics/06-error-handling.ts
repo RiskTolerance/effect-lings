@@ -2,6 +2,17 @@ import { Effect, Result } from "effect";
 import { check, section } from "../../lib/check";
 section("Four ways to deal with the E channel: recover, fall back, match both sides, or capture as a value.");
 
+// Before you start:
+// - Mental model: handling errors changes the `E` channel. You can recover to a
+//   default, collapse success/failure into one success type, or capture the
+//   outcome as data.
+// - Shape to look for: after `safe`, no error remains; after `described`, both
+//   paths become strings; after `captured`, failure becomes a `Result` value.
+// - Docs: v4 API references:
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html
+//   https://effect-ts.github.io/effect/effect/Result.ts.html
+//   Concept docs: https://effect.website/docs/error-management/expected-errors
+
 const risky = (n: number): Effect.Effect<number, string> =>
   n < 0 ? Effect.fail("negative") : Effect.succeed(n);
 
