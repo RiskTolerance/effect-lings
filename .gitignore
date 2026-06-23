@@ -1,0 +1,7 @@
+node_modules/
+progress.json
+
+# SvelteKit / Vite build artifacts (examples/sveltekit-effect)
+.svelte-kit/
+build/
+.vite/
