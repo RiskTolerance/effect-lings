@@ -58,9 +58,13 @@ It's deliberately bottom-up. The point is that **Effect's "magic" is mechanics y
 
 1. **`01-generators`** — `yield`, the two-way `.next(value)` channel, and `yield*`. The actual primitive. Most people use Effect for months without understanding this; you'll start here.
 2. **`02-mini-effect`** — build a ~15-line generator-driven interpreter that runs sync and async "ops." This *is* `Effect.gen` in miniature: `yield*` is `await`, your driver loop is the runtime, a running driver is a fiber.
-3. **`03-effect-basics`** — real Effect now. `succeed`/`runSync`, `Effect.gen` (which you'll recognize as the thing you just built), the typed error channel. The recognition is the payoff.
+3. **`03-effect-basics`** — real Effect now. `succeed`/`runSync`, `Effect.gen` (which you'll recognize as the thing you just built), the typed error channel, then `pipe`/`map`/`flatMap`, lifting work in (`sync`/`try`/`tryPromise`), error handling (`catch`/`match`/`result`), and `Ref` state. The recognition is the payoff.
+4. **`04-context`** — the **R channel**: services as interfaces in the context, `Layer.succeed`/`Layer.effect` to provide them, and layers that depend on other layers. This is Effect's dependency injection — the thing the example apps are built on.
+5. **`05-concurrency`** — where fibers earn their keep: `Effect.all` (with a concurrency option), `fork`/`Fiber.join`, and `race`.
+6. **`06-scheduling`** — `retry` and `repeat` driven by a `Schedule` (`recurs`, and the building block for backoff/spacing).
+7. **`07-resources`** — `acquireRelease` + scopes: cleanup that's guaranteed to run, even on failure or interruption.
 
-Phase 1–2 are short and the part you'll be tempted to skip. They're the whole point for grounding the abstract stuff — do them.
+Phase 1–2 are short and the part you'll be tempted to skip. They're the whole point for grounding the abstract stuff — do them. Blocks 4–7 are the "advanced" Effect most tutorials jump straight to; they land far better once 1–3 have demystified the machinery.
 
 ## From drills to real apps
 
@@ -75,7 +79,7 @@ cd examples/hono-effect && bun install && bun test
 
 ## Extending it
 
-Add a `.ts` file anywhere under `exercises/`. Files are picked up in sorted path order, so number them (`04-context/01-...`). Import `{ check, section }` from `lib/check`, write a TODO + checks, done. Natural next blocks: `Context`/`Layer` (dependency injection — the thing the example apps lean on), then `fork`/`Fiber`/`Effect.all`/interruption (concurrency — where fibers finally have a reason to exist), then `Schedule` (retries/repeats).
+Add a `.ts` file anywhere under `exercises/`. Files are picked up in sorted path order, so number them (`08-streams/01-...`). Import `{ check, section }` from `lib/check`, write a TODO + checks, done — and mirror the same path under `solutions/`. Keep checks comparing primitives or arrays of primitives (the tiny `equal` helper deep-compares arrays but uses `Object.is` for objects). Make the unsolved stub *type-check* (so `bun run typecheck` stays green) while failing at runtime. Natural next blocks now that 1–7 exist: interruption + `Fiber.interrupt`, `Stream` (pull-based async iteration), `Queue`/`PubSub`, the software-transactional-memory (`TxRef`) family, and a deeper `Schema` block (transforms, branded types).
 
 ## Version note
 
