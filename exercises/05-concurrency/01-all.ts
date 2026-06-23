@@ -9,8 +9,8 @@ section("Effect.all runs a collection of Effects and gathers their results — s
 // - Shape to look for: one version with default execution, one version with
 //   `{ concurrency: "unbounded" }`.
 // - Docs: v4 API reference:
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html
-//   Concept docs: https://effect.website/docs/concurrency/basic-concurrency
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html#all
+//   Concept docs: https://effect.website/docs/concurrency/basic-concurrency/#concurrency-options
 
 const double = (n: number) => Effect.succeed(n * 2);
 

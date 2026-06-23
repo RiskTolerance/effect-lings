@@ -8,7 +8,8 @@ section("This is Effect.gen in miniature: yield* is await, the driver is the run
 // - Shape to look for: inspect each yielded op, run sync ops directly, `await`
 //   async ops, then feed the produced value back into the generator.
 // - Docs: Effect API reference for the real runtime:
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html#gen
+//   Concept docs: https://effect.website/docs/getting-started/using-generators/#comparing-effectgen-with-asyncawait
 
 type Op<A> =
   | { _tag: "Sync"; run: () => A }

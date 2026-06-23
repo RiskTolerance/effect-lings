@@ -8,9 +8,9 @@ section("retry re-runs a FAILING Effect according to a Schedule. Schedule.recurs
 // - Shape to look for: run `flaky` through `Effect.retry` with a policy that
 //   allows enough retries to reach the third attempt.
 // - Docs: v4 API references:
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html
-//   https://effect-ts.github.io/effect/effect/Schedule.ts.html
-//   Concept docs: https://effect.website/docs/error-management/retrying
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html#retry
+//   https://effect-ts.github.io/effect/effect/Schedule.ts.html#recurs
+//   Concept docs: https://effect.website/docs/error-management/retrying/#retrying-n-times-immediately
 
 const program = Effect.gen(function* () {
   const attempts = yield* Ref.make(0);

@@ -8,9 +8,10 @@ section("Layer.succeed wraps a ready value; Layer.effect BUILDS the service from
 //   while building the service.
 // - Shape to look for: allocate the Ref once during layer construction, then
 //   expose methods that reuse that same Ref for every call.
-// - Docs: v4 API reference:
-//   https://effect-ts.github.io/effect/effect/Layer.ts.html
-//   Concept docs: https://effect.website/docs/requirements-management/layers
+// - Docs: v4 API references:
+//   https://effect-ts.github.io/effect/effect/Layer.ts.html#succeed
+//   https://effect-ts.github.io/effect/effect/Layer.ts.html#effect
+//   Concept docs: https://effect.website/docs/requirements-management/layers/#creating-layers
 
 class Counter extends Context.Service<
   Counter,

@@ -9,9 +9,11 @@ section("Four ways to deal with the E channel: recover, fall back, match both si
 // - Shape to look for: after `safe`, no error remains; after `described`, both
 //   paths become strings; after `captured`, failure becomes a `Result` value.
 // - Docs: v4 API references:
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html
-//   https://effect-ts.github.io/effect/effect/Result.ts.html
-//   Concept docs: https://effect.website/docs/error-management/expected-errors
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html#catch
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html#match
+//   Concept docs:
+//   https://effect.website/docs/error-management/expected-errors/#catching-all-errors
+//   https://effect.website/docs/error-management/matching/#match
 
 const risky = (n: number): Effect.Effect<number, string> =>
   n < 0 ? Effect.fail("negative") : Effect.succeed(n);

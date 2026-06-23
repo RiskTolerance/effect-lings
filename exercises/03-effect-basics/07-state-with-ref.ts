@@ -9,9 +9,10 @@ section("Mutable state, the Effect way: a Ref is a typed, fiber-safe cell you re
 // - Shape to look for: create the Ref inside the program, yield updates in
 //   order, then yield a final read. `modify` returns one value while storing
 //   another.
-// - Docs: v4 API reference:
-//   https://effect-ts.github.io/effect/effect/Ref.ts.html
-//   Concept docs: https://effect.website/docs/state-management/ref
+// - Docs: v4 API references:
+//   https://effect-ts.github.io/effect/effect/Ref.ts.html#make
+//   https://effect-ts.github.io/effect/effect/Ref.ts.html#modify
+//   Concept docs: https://effect.website/docs/state-management/ref/#using-ref
 
 // 📝 TODO: build a program that:
 //          1. creates a Ref starting at 0        (Ref.make)

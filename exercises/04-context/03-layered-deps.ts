@@ -9,8 +9,8 @@ section("Layers depend on layers. A layer that REQUIRES another service is wired
 // - Shape to look for: build Greeter from Config, then provide ConfigLive to
 //   GreeterLive so the final runnable program only needs Greeter.
 // - Docs: v4 API reference:
-//   https://effect-ts.github.io/effect/effect/Layer.ts.html
-//   Concept docs: https://effect.website/docs/requirements-management/layers
+//   https://effect-ts.github.io/effect/effect/Layer.ts.html#provide
+//   Concept docs: https://effect.website/docs/requirements-management/layers/#designing-the-dependency-graph
 
 class Config extends Context.Service<Config, { readonly greeting: string }>()("Config") {}
 class Greeter extends Context.Service<

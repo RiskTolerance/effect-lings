@@ -8,9 +8,10 @@ section("Effect<A,E,R> is a *description*. Nothing runs until you run it.")
 //   the result itself.
 // - Shape to look for: build a success description with `Effect.succeed`, then
 //   run it at the edge with `Effect.runSync`.
-// - Docs: v4 API reference:
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html
-//   Concept docs: https://effect.website/docs/getting-started/the-effect-type
+// - Docs: v4 API references:
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html#succeed
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html#runsync
+//   Concept docs: https://effect.website/docs/getting-started/the-effect-type/#type-parameters
 
 // 📝 TODO: create an Effect that succeeds with 42 (Effect.succeed),
 //          then execute it with Effect.runSync and store the result.
