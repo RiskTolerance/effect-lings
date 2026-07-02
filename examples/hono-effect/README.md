@@ -28,19 +28,19 @@ The tests use Hono's `app.request()`, which pushes a `Request` through the whole
 
 ## How it's wired (read in this order)
 
-| File | Role |
-|------|------|
-| [`src/domain.ts`](src/domain.ts) | The `Todo` entity, request `Schema`s, and typed errors (`TodoNotFound`, `InvalidInput`). Knows nothing about HTTP. |
-| [`src/repo.ts`](src/repo.ts) | `TodoRepo`, a **service** (`Context.Service`) with an in-memory **layer** backed by a `Ref`. Swap it for a SQL layer and nothing above changes. |
-| [`src/runtime.ts`](src/runtime.ts) | The bridge: a `ManagedRuntime` builds the layers **once**, plus `toResponse` to run a handler and turn an unexpected defect into a 500. |
-| [`src/routes.ts`](src/routes.ts) | The Hono routes. Each handler is an `Effect` that decodes input, calls the repo, and `catchTags` every expected error into the right status code. |
-| [`src/server.ts`](src/server.ts) | Bun entry point — a default export with a `fetch` method. |
+| File                               | Role                                                                                                                                              |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`src/domain.ts`](src/domain.ts)   | The `Todo` entity, request `Schema`s, and typed errors (`TodoNotFound`, `InvalidInput`). Knows nothing about HTTP.                                |
+| [`src/repo.ts`](src/repo.ts)       | `TodoRepo`, a **service** (`Context.Service`) with an in-memory **layer** backed by a `Ref`. Swap it for a SQL layer and nothing above changes.   |
+| [`src/runtime.ts`](src/runtime.ts) | The bridge: a `ManagedRuntime` builds the layers **once**, plus `toResponse` to run a handler and turn an unexpected defect into a 500.           |
+| [`src/routes.ts`](src/routes.ts)   | The Hono routes. Each handler is an `Effect` that decodes input, calls the repo, and `catchTags` every expected error into the right status code. |
+| [`src/server.ts`](src/server.ts)   | Bun entry point — a default export with a `fetch` method.                                                                                         |
 
 ## The three ideas worth taking away
 
-1. **Services + layers = swappable dependencies.** Routes depend on the `TodoRepo` *interface*, never a concrete class. The in-memory layer is one `Layer.effect`; a database layer would be a drop-in replacement.
+1. **Services + layers = swappable dependencies.** Routes depend on the `TodoRepo` _interface_, never a concrete class. The in-memory layer is one `Layer.effect`; a database layer would be a drop-in replacement.
 
-2. **Errors are values in the type.** `repo.get` returns `Effect<Todo, TodoNotFound>`. The compiler *forces* the route to deal with `TodoNotFound` before the Effect can be run — so a forgotten 404 is a type error, not a production incident.
+2. **Errors are values in the type.** `repo.get` returns `Effect<Todo, TodoNotFound>`. The compiler _forces_ the route to deal with `TodoNotFound` before the Effect can be run — so a forgotten 404 is a type error, not a production incident.
 
 3. **One bridge, built once.** `ManagedRuntime.make(AppLayer)` constructs the dependency graph a single time. Each request is just `runtime.runPromiseExit(handler)` — fast, and the in-memory store persists across requests because the layer is a singleton.
 

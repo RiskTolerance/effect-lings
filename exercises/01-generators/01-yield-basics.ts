@@ -1,19 +1,23 @@
 import { check, section } from '../../lib/check'
-section('Generators are pausable functions. `function*` returns an iterator.')
+section(
+	'Generators are pausable functions. `function*` returns an iterator.'
+)
 
-// Before you start:
-// - Mental model: calling a generator function does not run its body right away.
-//   It gives you an iterator. Each `.next()` runs until the next `yield`.
-// - Shape to look for: three pauses that emit 1, 2, and 3. When the function
-//   reaches the end, the next result has `done: true`.
-// - Docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*
+/*
+ * Before you start:
+ * - Mental model: calling a generator function does not run its body right away.
+ *   It gives you an iterator. Each `.next()` runs until the next `yield`.
+ * - Shape to look for: three pauses that emit 1, 2, and 3. When the function
+ *   reaches the end, the next result has `done: true`.
+ * - Docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*
+ */
 
 // 📝 TODO: make this generator yield 1, then 2, then 3.
 function* count(): Generator<number> {
-  // your code here
-  yield 1 // fix me
-  yield 2
-  yield 3
+	// your code here
+	yield 1 // fix me
+	yield 2
+	yield 3
 }
 
 // ---- checks (don't edit) ----

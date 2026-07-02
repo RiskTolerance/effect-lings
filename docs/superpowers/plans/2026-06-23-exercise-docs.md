@@ -39,6 +39,7 @@ Commit note: current worktree already has pre-existing exercise edits in `exerci
 ### Task 1: Generators
 
 **Files:**
+
 - Modify: `exercises/01-generators/01-yield-basics.ts`
 - Modify: `exercises/01-generators/02-two-way.ts`
 - Modify: `exercises/01-generators/03-delegation.ts`
@@ -96,6 +97,7 @@ Expected: each command exits 0 and prints passing checks. If `03-delegation.ts` 
 ### Task 2: Mini Effect Driver
 
 **Files:**
+
 - Modify: `exercises/02-mini-effect/01-sync-driver.ts`
 - Modify: `exercises/02-mini-effect/02-async-driver.ts`
 
@@ -143,6 +145,7 @@ Expected: `01-sync-driver.ts` exits 0 if already solved locally; `02-async-drive
 ### Task 3: Effect Basics
 
 **Files:**
+
 - Modify: `exercises/03-effect-basics/01-succeed-run.ts`
 - Modify: `exercises/03-effect-basics/02-gen.ts`
 - Modify: `exercises/03-effect-basics/03-typed-errors.ts`
@@ -267,6 +270,7 @@ Expected: command result matches pre-change typecheck behavior. Comments must no
 ### Task 4: Context And Layers
 
 **Files:**
+
 - Modify: `exercises/04-context/01-service.ts`
 - Modify: `exercises/04-context/02-layers.ts`
 - Modify: `exercises/04-context/03-layered-deps.ts`
@@ -330,6 +334,7 @@ Expected: command result matches pre-change typecheck behavior.
 ### Task 5: Concurrency
 
 **Files:**
+
 - Modify: `exercises/05-concurrency/01-all.ts`
 - Modify: `exercises/05-concurrency/02-fork-join.ts`
 - Modify: `exercises/05-concurrency/03-race.ts`
@@ -395,6 +400,7 @@ Expected: unsolved exercises may fail their checks. They must still execute and 
 ### Task 6: Scheduling And Resources
 
 **Files:**
+
 - Modify: `exercises/06-scheduling/01-retry.ts`
 - Modify: `exercises/06-scheduling/02-repeat.ts`
 - Modify: `exercises/07-resources/01-acquire-release.ts`
@@ -461,6 +467,7 @@ Expected: unsolved exercises may fail their checks. They must still execute and 
 ### Task 7: Final Verification
 
 **Files:**
+
 - Verify: `exercises/**/*.ts`
 
 - [ ] **Step 1: Run typecheck**

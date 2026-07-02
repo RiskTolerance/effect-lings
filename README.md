@@ -1,6 +1,6 @@
 # effect-practice
 
-A self-checking, streak-tracking drill repo for **Effect** and the JS/TS primitives underneath it. Built for the real problem — *sticking with it* — not for completeness.
+A self-checking, streak-tracking drill repo for **Effect** and the JS/TS primitives underneath it. Built for the real problem — _sticking with it_ — not for completeness.
 
 The design goal is **zero friction**: one command runs the next exercise, checks your work, and tells you what's next. No deciding, no setup, no blank page.
 
@@ -46,7 +46,7 @@ Each file has a `📝 TODO` and a block of checks you don't touch. Fill the TODO
 ```ts
 // 📝 TODO: make this generator yield 1, then 2, then 3.
 function* count(): Generator<number> {
-  // your code here
+	// your code here
 }
 ```
 
@@ -57,7 +57,7 @@ Stuck for more than a few minutes? The full answer is in `solutions/` mirroring 
 It's deliberately bottom-up. The point is that **Effect's "magic" is mechanics you'll have already built by hand**:
 
 1. **`01-generators`** — `yield`, the two-way `.next(value)` channel, and `yield*`. The actual primitive. Most people use Effect for months without understanding this; you'll start here.
-2. **`02-mini-effect`** — build a ~15-line generator-driven interpreter that runs sync and async "ops." This *is* `Effect.gen` in miniature: `yield*` is `await`, your driver loop is the runtime, a running driver is a fiber.
+2. **`02-mini-effect`** — build a ~15-line generator-driven interpreter that runs sync and async "ops." This _is_ `Effect.gen` in miniature: `yield*` is `await`, your driver loop is the runtime, a running driver is a fiber.
 3. **`03-effect-basics`** — real Effect now. `succeed`/`runSync`, `Effect.gen` (which you'll recognize as the thing you just built), the typed error channel, then `pipe`/`map`/`flatMap`, lifting work in (`sync`/`try`/`tryPromise`), error handling (`catch`/`match`/`result`), and `Ref` state. The recognition is the payoff.
 4. **`04-context`** — the **R channel**: services as interfaces in the context, `Layer.succeed`/`Layer.effect` to provide them, and layers that depend on other layers. This is Effect's dependency injection — the thing the example apps are built on.
 5. **`05-concurrency`** — where fibers earn their keep: `Effect.all` (with a concurrency option), `fork`/`Fiber.join`, and `race`.
@@ -71,7 +71,7 @@ Phase 1–2 are short and the part you'll be tempted to skip. They're the whole 
 Once the basics click, the `examples/` directory shows the same primitives wired into real web frameworks. Each is a standalone Bun project with its own README and install:
 
 - **[`examples/hono-effect`](examples/hono-effect)** — a REST API where [Hono](https://hono.dev) is the web layer and Effect owns the logic: services, layers, typed errors, and `Schema` validation, all verified with `bun test` via Hono's in-memory `app.request()`. **Start here** — it's the deepest example.
-- **[`examples/sveltekit-effect`](examples/sveltekit-effect)** — the *same* Effect service pattern used in a [SvelteKit](https://svelte.dev/docs/kit) `load`, a form action, and a JSON API route. Shows the Effect side is framework-agnostic; only the thin bridge at the edge changes.
+- **[`examples/sveltekit-effect`](examples/sveltekit-effect)** — the _same_ Effect service pattern used in a [SvelteKit](https://svelte.dev/docs/kit) `load`, a form action, and a JSON API route. Shows the Effect side is framework-agnostic; only the thin bridge at the edge changes.
 
 ```bash
 cd examples/hono-effect && bun install && bun test
@@ -79,7 +79,7 @@ cd examples/hono-effect && bun install && bun test
 
 ## Extending it
 
-Add a `.ts` file anywhere under `exercises/`. Files are picked up in sorted path order, so number them (`08-streams/01-...`). Import `{ check, section }` from `lib/check`, write a TODO + checks, done — and mirror the same path under `solutions/`. Keep checks comparing primitives or arrays of primitives (the tiny `equal` helper deep-compares arrays but uses `Object.is` for objects). Make the unsolved stub *type-check* (so `bun run typecheck` stays green) while failing at runtime. Natural next blocks now that 1–7 exist: interruption + `Fiber.interrupt`, `Stream` (pull-based async iteration), `Queue`/`PubSub`, the software-transactional-memory (`TxRef`) family, and a deeper `Schema` block (transforms, branded types).
+Add a `.ts` file anywhere under `exercises/`. Files are picked up in sorted path order, so number them (`08-streams/01-...`). Import `{ check, section }` from `lib/check`, write a TODO + checks, done — and mirror the same path under `solutions/`. Keep checks comparing primitives or arrays of primitives (the tiny `equal` helper deep-compares arrays but uses `Object.is` for objects). Make the unsolved stub _type-check_ (so `bun run typecheck` stays green) while failing at runtime. Natural next blocks now that 1–7 exist: interruption + `Fiber.interrupt`, `Stream` (pull-based async iteration), `Queue`/`PubSub`, the software-transactional-memory (`TxRef`) family, and a deeper `Schema` block (transforms, branded types).
 
 ## Version note
 

@@ -1,44 +1,59 @@
-import { Context, Effect, Layer } from "effect";
-import { check, section } from "../../lib/check";
-section("Layers depend on layers. A layer that REQUIRES another service is wired up with Layer.provide.");
+import { Context, Effect, Layer } from 'effect'
+import { check, section } from '../../lib/check'
+section(
+	'Layers depend on layers. A layer that REQUIRES another service is wired up with Layer.provide.'
+)
 
-// Before you start:
-// - Mental model: layers can need other services while they are being built.
-//   That requirement belongs to the layer construction step, not to the service
-//   interface callers use afterward.
-// - Shape to look for: build Greeter from Config, then provide ConfigLive to
-//   GreeterLive so the final runnable program only needs Greeter.
-// - Docs: v4 API reference:
-//   https://effect-ts.github.io/effect/effect/Layer.ts.html
-//   Concept docs: https://effect.website/docs/requirements-management/layers
+/*
+ * Before you start:
+ * - Mental model: layers can need other services while they are being built.
+ *   That requirement belongs to the layer construction step, not to the service
+ *   interface callers use afterward.
+ * - Shape to look for: build Greeter from Config, then provide ConfigLive to
+ *   GreeterLive so the final runnable program only needs Greeter.
+ * - Docs: v4 API reference:
+ *   https://effect-ts.github.io/effect/effect/Layer.ts.html
+ *   Concept docs: https://effect.website/docs/requirements-management/layers
+ */
 
-class Config extends Context.Service<Config, { readonly greeting: string }>()("Config") {}
+class Config extends Context.Service<
+	Config,
+	{ readonly greeting: string }
+>()('Config') {}
 class Greeter extends Context.Service<
-  Greeter,
-  { readonly greet: (name: string) => Effect.Effect<string> }
->()("Greeter") {}
+	Greeter,
+	{ readonly greet: (name: string) => Effect.Effect<string> }
+>()('Greeter') {}
 
-const ConfigLive = Layer.succeed(Config)(Config.of({ greeting: "Hi" }));
+const ConfigLive = Layer.succeed(Config)(
+	Config.of({ greeting: 'Hi' })
+)
 
 // 📝 TODO: in GreeterLive's construction, `yield* Config` and use config.greeting
 //          to format the greeting, e.g. `${config.greeting}, ${name}!`.
 //          Doing so changes GreeterLive's type to Layer<Greeter, never, Config>:
 //          it now REQUIRES a Config to be built.
 const GreeterLive = Layer.effect(Greeter)(
-  Effect.gen(function* () {
-    return Greeter.of({ greet: (name) => Effect.succeed(name) }); // fix me
-  }),
-);
+	Effect.gen(function* () {
+		return Greeter.of({ greet: (name) => Effect.succeed(name) }) // fix me
+	})
+)
 
 const program = Effect.gen(function* () {
-  const greeter = yield* Greeter;
-  return yield* greeter.greet("Ada");
-});
+	const greeter = yield* Greeter
+	return yield* greeter.greet('Ada')
+})
 
 // 📝 TODO: once GreeterLive requires Config, providing it alone won't type-check.
 //          Feed ConfigLive into it first: Layer.provide(GreeterLive, ConfigLive)
 //          yields a Layer<Greeter> that needs nothing. Provide THAT.
-const runnable: Effect.Effect<string> = program.pipe(Effect.provide(GreeterLive)); // fix me
+const runnable: Effect.Effect<string> = program.pipe(
+	Effect.provide(GreeterLive)
+) // fix me
 
 // ---- checks (don't edit) ----
-check("the greeter reads its dependency from the context", Effect.runSync(runnable), "Hi, Ada!");
+check(
+	'the greeter reads its dependency from the context',
+	Effect.runSync(runnable),
+	'Hi, Ada!'
+)

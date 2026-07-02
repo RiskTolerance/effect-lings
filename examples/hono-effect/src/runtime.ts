@@ -9,16 +9,16 @@
 //      thing left to translate here is an unexpected *defect* — that becomes a
 //      500 instead of a hung request.
 
-import { Effect, Exit, ManagedRuntime } from "effect";
-import { TodoRepo, TodoRepoMemory } from "./repo.ts";
+import { Effect, Exit, ManagedRuntime } from 'effect'
+import { TodoRepo, TodoRepoMemory } from './repo.ts'
 
 // The app's dependency graph. Add more layers with Layer.merge as the app grows.
-export const AppLayer = TodoRepoMemory;
+export const AppLayer = TodoRepoMemory
 
 /** Services available to a route handler — i.e. what AppLayer provides. */
-export type AppServices = TodoRepo;
+export type AppServices = TodoRepo
 
-export const runtime = ManagedRuntime.make(AppLayer);
+export const runtime = ManagedRuntime.make(AppLayer)
 
 /**
  * Run a fully-recovered handler Effect to a Response. The Effect's error
@@ -26,10 +26,13 @@ export const runtime = ManagedRuntime.make(AppLayer);
  * anything still failing here is a bug, and we surface it as a 500.
  */
 export const toResponse = async (
-  effect: Effect.Effect<Response, never, AppServices>,
+	effect: Effect.Effect<Response, never, AppServices>
 ): Promise<Response> => {
-  const exit = await runtime.runPromiseExit(effect);
-  if (Exit.isSuccess(exit)) return exit.value;
-  console.error("Unhandled defect in handler:", exit.cause);
-  return Response.json({ error: "InternalServerError" }, { status: 500 });
-};
+	const exit = await runtime.runPromiseExit(effect)
+	if (Exit.isSuccess(exit)) return exit.value
+	console.error('Unhandled defect in handler:', exit.cause)
+	return Response.json(
+		{ error: 'InternalServerError' },
+		{ status: 500 }
+	)
+}

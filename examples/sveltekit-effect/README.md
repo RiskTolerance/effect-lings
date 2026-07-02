@@ -1,6 +1,6 @@
 # sveltekit-effect
 
-A small **[SvelteKit](https://svelte.dev/docs/kit)** app that uses **Effect** for its server logic — in a page `load`, a form action, and a JSON API route. It deliberately reuses the *same* service/layer/typed-error pattern as the [`hono-effect`](../hono-effect) example, to show that the Effect side is framework-agnostic: only the thin bridge at the edge changes.
+A small **[SvelteKit](https://svelte.dev/docs/kit)** app that uses **Effect** for its server logic — in a page `load`, a form action, and a JSON API route. It deliberately reuses the _same_ service/layer/typed-error pattern as the [`hono-effect`](../hono-effect) example, to show that the Effect side is framework-agnostic: only the thin bridge at the edge changes.
 
 ## Run it
 
@@ -26,12 +26,12 @@ bun build/index.js     # run the production server on Bun.serve
 
 ## How it's wired
 
-| File | Role |
-|------|------|
-| [`src/lib/server/todos.ts`](src/lib/server/todos.ts) | **All the Effect code**: the `Todo` schema, typed errors, a `TodoRepo` service with an in-memory `Ref` layer, a `ManagedRuntime`, and the `run` bridge. `$lib/server` is guaranteed server-only by SvelteKit. |
-| [`src/routes/+page.server.ts`](src/routes/+page.server.ts) | A `load` that runs an Effect to list todos, and a `create` form action that validates with `Schema` and reports errors back to the form. |
-| [`src/routes/+page.svelte`](src/routes/+page.svelte) | Svelte 5 (runes) UI: renders the loaded todos and a progressively-enhanced form. |
-| [`src/routes/api/todos/+server.ts`](src/routes/api/todos/+server.ts) | A JSON API (`GET`/`POST`) backed by the same `TodoRepo` service. |
+| File                                                                 | Role                                                                                                                                                                                                          |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`src/lib/server/todos.ts`](src/lib/server/todos.ts)                 | **All the Effect code**: the `Todo` schema, typed errors, a `TodoRepo` service with an in-memory `Ref` layer, a `ManagedRuntime`, and the `run` bridge. `$lib/server` is guaranteed server-only by SvelteKit. |
+| [`src/routes/+page.server.ts`](src/routes/+page.server.ts)           | A `load` that runs an Effect to list todos, and a `create` form action that validates with `Schema` and reports errors back to the form.                                                                      |
+| [`src/routes/+page.svelte`](src/routes/+page.svelte)                 | Svelte 5 (runes) UI: renders the loaded todos and a progressively-enhanced form.                                                                                                                              |
+| [`src/routes/api/todos/+server.ts`](src/routes/api/todos/+server.ts) | A JSON API (`GET`/`POST`) backed by the same `TodoRepo` service.                                                                                                                                              |
 
 ## The one idea to take away
 
@@ -48,7 +48,7 @@ const run = async (effect) => {
 };
 ```
 
-A `load`, an action, and an API route all call it. The typed error channel (`TodoNotFound | InvalidInput`) is what lets the bridge map failures to the right HTTP status — and what makes a forgotten case a *compile* error.
+A `load`, an action, and an API route all call it. The typed error channel (`TodoNotFound | InvalidInput`) is what lets the bridge map failures to the right HTTP status — and what makes a forgotten case a _compile_ error.
 
 ## Effect v4 notes
 
