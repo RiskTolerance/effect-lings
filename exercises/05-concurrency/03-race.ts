@@ -8,8 +8,8 @@ section("race runs two Effects at once; the first to finish wins and the loser i
 // - Shape to look for: combine `fast` and `slow` into one Effect whose success
 //   value is whichever finishes first.
 // - Docs: v4 API reference:
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html#race
-//   Concept docs: https://effect.website/docs/concurrency/basic-concurrency/#racing
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html
+//   Concept docs: https://effect.website/docs/concurrency/basic-concurrency
 
 const fast = Effect.succeed("fast");
 const slow = Effect.succeed("slow").pipe(Effect.delay(Duration.millis(50)));

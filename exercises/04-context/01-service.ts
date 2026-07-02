@@ -8,9 +8,9 @@ section("A service is an interface stored in the context (the R channel). Yield 
 // - Shape to look for: `yield* Greeter` adds a Greeter requirement; providing
 //   `GreeterLive` removes that requirement before running.
 // - Docs: v4 API references:
-//   https://effect-ts.github.io/effect/effect/Context.ts.html#service-type-alias
-//   https://effect-ts.github.io/effect/effect/Layer.ts.html#succeed
-//   Concept docs: https://effect.website/docs/requirements-management/services/#using-the-service
+//   https://effect-ts.github.io/effect/effect/Context.ts.html
+//   https://effect-ts.github.io/effect/effect/Layer.ts.html
+//   Concept docs: https://effect.website/docs/requirements-management/services
 
 // The service KEY: an identity + the shape of its implementation. Yielding it
 // inside a gen retrieves whatever implementation the context provides.

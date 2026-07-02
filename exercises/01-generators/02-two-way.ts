@@ -14,9 +14,8 @@ section('`const x = yield q` hands q OUT, and .next(v) makes v become x.')
 //          and return `sum is <a+b>`. Note the third Generator type param is
 //          the type of what gets fed back IN.
 function* conversation(): Generator<string, string, number> {
-  const a = yield 'give me a number'
-  const b = yield 'give me another'
-  return `sum is ${a + b}`
+  // your code here
+  return 'sum is 0' // fix me
 }
 
 // ---- checks (don't edit) ----

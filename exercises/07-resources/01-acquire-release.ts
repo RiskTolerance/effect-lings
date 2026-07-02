@@ -9,9 +9,9 @@ section("acquireRelease pairs setup with guaranteed cleanup. Inside a scope, rel
 // - Shape to look for: acquire the resource inside `Effect.scoped`, use it, and
 //   let the scope call release automatically.
 // - Docs: v4 API references:
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html#acquirerelease
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html#scoped
-//   Concept docs: https://effect.website/docs/resource-management/scope/#acquirerelease
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html
+//   https://effect-ts.github.io/effect/effect/Scope.ts.html
+//   Concept docs: https://effect.website/docs/resource-management/scope
 
 const log: string[] = [];
 

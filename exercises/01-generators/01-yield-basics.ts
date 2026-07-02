@@ -10,9 +10,8 @@ section('Generators are pausable functions. `function*` returns an iterator.')
 
 // 📝 TODO: make this generator yield 1, then 2, then 3.
 function* count(): Generator<number> {
-  yield 1
-  yield 2
-  yield 3
+  // your code here
+  yield 0 // fix me
 }
 
 // ---- checks (don't edit) ----

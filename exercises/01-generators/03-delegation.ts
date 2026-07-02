@@ -15,9 +15,7 @@ function* inner(): Generator<number> {
 
 // 📝 TODO: yield 0, then delegate to inner() with yield*, then yield 3.
 function* outer(): Generator<number> {
-  yield 0
-  yield* inner()
-  yield 3
+  // your code here
 }
 
 // ---- checks (don't edit) ----

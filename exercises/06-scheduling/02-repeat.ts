@@ -8,9 +8,9 @@ section("repeat re-runs a SUCCEEDING Effect according to a Schedule. recurs(n) r
 // - Shape to look for: `Schedule.recurs(3)` means three repeats after the first
 //   run, so the effect runs four times total.
 // - Docs: v4 API references:
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html#repeat
-//   https://effect-ts.github.io/effect/effect/Schedule.ts.html#recurs
-//   Concept docs: https://effect.website/docs/scheduling/repetition/#repeat
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html
+//   https://effect-ts.github.io/effect/effect/Schedule.ts.html
+//   Concept docs: https://effect.website/docs/scheduling/repetition
 
 const program = Effect.gen(function* () {
   const count = yield* Ref.make(0);

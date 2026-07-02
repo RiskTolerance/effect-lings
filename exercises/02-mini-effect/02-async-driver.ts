@@ -8,8 +8,7 @@ section("This is Effect.gen in miniature: yield* is await, the driver is the run
 // - Shape to look for: inspect each yielded op, run sync ops directly, `await`
 //   async ops, then feed the produced value back into the generator.
 // - Docs: Effect API reference for the real runtime:
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html#gen
-//   Concept docs: https://effect.website/docs/getting-started/using-generators/#comparing-effectgen-with-asyncawait
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html
 
 type Op<A> =
   | { _tag: "Sync"; run: () => A }
@@ -21,19 +20,8 @@ const async = <A>(run: () => Promise<A>): Op<A> => ({ _tag: "Async", run })
 // 📝 TODO: same driver as before, but if the op is Async, `await` it before
 //          feeding the result back in. (run() is now async.)
 async function run<A>(program: () => Generator<Op<any>, A, any>): Promise<A> {
-
-  let gen = program()
-  let step = gen.next()
-  while (!step.done) {
-    if (step.value._tag === 'Async') {
-      const res = await step.value.run()
-      step = gen.next(res)
-    } else {
-      const res = step.value.run()
-      step = gen.next(res)
-    }
-  }
-  return step.value as any
+  // your code here
+  return undefined as any
 }
 
 // ---- checks (don't edit) ----

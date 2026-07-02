@@ -8,17 +8,16 @@ section("Effect.gen IS the driver you built. yield* pulls a value out of an Effe
 // - Shape to look for: bind one Effect result, use it to build the next Effect,
 //   then return a plain final value from the generator.
 // - Docs: v4 API reference:
-//   https://effect-ts.github.io/effect/effect/Effect.ts.html#gen
-//   Concept docs: https://effect.website/docs/getting-started/using-generators/#understanding-effectgen
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html
+//   Concept docs: https://effect.website/docs/getting-started/using-generators
 
 const add = (a: number, b: number) => Effect.succeed(a + b)
 
 // 📝 TODO: inside the gen, yield* Effect.succeed(10) into x,
 //          yield* add(x, 5) into y, and return y * 2.
 const program = Effect.gen(function* () {
-  let x = Effect.succeed(10)
-  let y = yield* add(yield* x, 5)
-  return y * 2
+  // your code here
+  return 0 // fix me
 })
 
 // ---- checks (don't edit) ----

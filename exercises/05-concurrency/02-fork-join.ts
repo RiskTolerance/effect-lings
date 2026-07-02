@@ -8,13 +8,10 @@ section("fork starts an Effect on its own fiber — it runs concurrently. Fiber.
 //   preserves its failure behavior.
 // - Shape to look for: fork both effects before joining either one, so they can
 //   run at the same time.
-// - Docs: v4 API reference:
-//   https://effect-ts.github.io/effect/effect/Fiber.ts.html#join
-//   Note: `Effect.forkChild` is in the pinned v4 types; the generated API docs
-//   do not expose a stable anchor for it yet.
-//   Concept docs:
-//   https://effect.website/docs/concurrency/fibers/#forking-effects
-//   https://effect.website/docs/concurrency/fibers/#joining-fibers
+// - Docs: v4 API references:
+//   https://effect-ts.github.io/effect/effect/Effect.ts.html
+//   https://effect-ts.github.io/effect/effect/Fiber.ts.html
+//   Concept docs: https://effect.website/docs/concurrency/fibers
 
 // 📝 TODO: in the gen, fork BOTH effects with Effect.forkChild to get two fibers
 //          running concurrently, then Fiber.join each and return their sum (42).

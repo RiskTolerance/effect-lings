@@ -20,13 +20,8 @@ const sync = <A>(run: () => A): Op<A> => ({ _tag: "Sync", run })
 //          2. pass that result back in with it.next(result)
 //          Return the generator's final value when done.
 function run<A>(program: () => Generator<Op<any>, A, any>): A {
-  const gen = program()
-  let step = gen.next()
-  while (!step.done) {
-    const res = step.value.run()
-    step = gen.next(res)
-  }
-  return step.value as any
+  // your code here
+  return undefined as any
 }
 
 // ---- checks (don't edit) ----
