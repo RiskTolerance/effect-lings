@@ -1,4 +1,11 @@
-import { readdirSync, existsSync, watch } from 'node:fs'
+import {
+	readdirSync,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	writeFileSync,
+	watch
+} from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, relative, sep } from 'node:path'
 import {
@@ -216,13 +223,38 @@ async function verify(): Promise<void> {
 	if (failed) process.exitCode = 1
 }
 
+function cmdReset(): void {
+	const startersDir = join(root, 'starters')
+	if (!existsSync(startersDir))
+		throw new Error(
+			'Missing starters/ directory. Restore it before resetting.'
+		)
+	const files = filesIn(startersDir)
+	if (files.length === 0)
+		throw new Error('No starter exercises found. Nothing was reset.')
+	// Read every template before overwriting work. Reset works without Git and
+	// restores deleted exercise files too. Files without a template are kept.
+	const originals = files.map((file) => ({
+		path: join(exercisesDir, file),
+		contents: readFileSync(join(startersDir, file))
+	}))
+	for (const original of originals) {
+		mkdirSync(dirname(original.path), { recursive: true })
+		writeFileSync(original.path, original.contents)
+	}
+	saveProgress(progressFile, emptyProgress())
+	console.log(
+		`Restored ${files.length} exercises to their unsolved starters. Progress and streak cleared.`
+	)
+}
+
 const help = `Usage: bun run.ts <command> [exercise path]
 
   today         Run the next unsolved exercise (default)
   run <path>    Practice a specific exercise, including completed ones
   watch [path]  Re-check on save; record passes and advance automatically
   list          Show exercise paths, progress, and current streak
-  reset         Clear recorded progress; keep exercise source files
+  reset         Restore unsolved exercise files and clear progress + streak
   verify        Run every reference solution without changing progress
   help          Show this help
 
@@ -253,11 +285,7 @@ async function main(): Promise<void> {
 			return
 		}
 		case 'reset':
-			saveProgress(progressFile, emptyProgress())
-			console.log(
-				'Progress and streak cleared. Exercise source files are unchanged.'
-			)
-			return
+			return cmdReset()
 		case 'verify':
 			return verify()
 		case 'help':

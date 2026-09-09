@@ -101,7 +101,7 @@ export function loadProgress(
 	} catch (error) {
 		// Never silently overwrite a malformed save on the next successful run.
 		throw new Error(
-			`Cannot read ${file}. Fix it or run \`bun run reset\` to clear it.`,
+			`Cannot read ${file}. Fix it or run \`bun run reset\` to restore all exercise files and clear progress.`,
 			{ cause: error }
 		)
 	}

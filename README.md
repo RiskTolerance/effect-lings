@@ -35,7 +35,7 @@ Other commands:
 
 ```bash
 bun run list       # progress + streak
-bun run reset      # clear progress + streak; keep your source edits
+bun run reset      # restore unsolved exercises; clear progress + streak
 bun run typecheck  # type-check exercises, solutions, and runner
 bun test tests     # runner + progress regression tests
 bun run verify    # run all reference solutions; leave progress untouched
@@ -45,6 +45,8 @@ bun run.ts help   # all commands
 bun run.ts run 03-effect-basics/04-pipe-and-map
 bun run.ts watch 03-effect-basics/04-pipe-and-map
 ```
+
+**`bun run reset` overwrites your edits to the bundled exercises** with clean, unsolved copies from `starters/`, restores deleted exercise files, and clears progress and streaks. It runs immediately without a confirmation prompt. Solutions and extra files without a matching starter are left alone.
 
 Streaks follow your local calendar, including daylight saving changes. Completing multiple new exercises on one day earns one streak day; replaying a completed exercise does not extend it. A missed day resets the displayed streak. Progress is stored in `progress.json`; malformed saves produce an error with recovery instructions instead of being silently discarded.
 
@@ -90,7 +92,7 @@ cd examples/hono-effect && bun install && bun test
 
 ## Extending it
 
-Add a `.ts` file anywhere under `exercises/`. Files are picked up in sorted path order, so number them (`08-streams/01-...`). Import `{ check, section }` from `lib/check`, write a TODO + checks, done — and mirror the same path under `solutions/`. Keep checks comparing primitives or arrays of primitives (the tiny `equal` helper deep-compares arrays but uses `Object.is` for objects). Make the unsolved stub _type-check_ (so `bun run typecheck` stays green) while failing at runtime. Keep the exercise and solution checks identical, and verify behavior on both success and failure paths. Run `bun run verify` after editing a solution. CI checks types, formatting, all solutions, runner regressions, and both example apps. Natural next blocks now that 1–7 exist: `Stream` (pull-based async iteration), `Queue`/`PubSub`, the software-transactional-memory (`TxRef`) family, and a deeper `Schema` block (transforms, branded types).
+Add a `.ts` file anywhere under `exercises/`. Files are picked up in sorted path order, so number them (`08-streams/01-...`). Import `{ check, section }` from `lib/check`, write a TODO + checks, done — and mirror the same path under `solutions/`. Also keep a clean, unsolved copy under `starters/` at the same path; reset restores from this directory, so never use it for practice. Keep checks comparing primitives or arrays of primitives (the tiny `equal` helper deep-compares arrays but uses `Object.is` for objects). Make the unsolved stub _type-check_ (so `bun run typecheck` stays green) while failing at runtime. Keep the exercise and solution checks identical, and verify behavior on both success and failure paths. When changing a lesson, update its starter and solution too. Run `bun run test` to check that every starter fails as an unfinished exercise, and `bun run verify` to check the solutions. CI checks types, formatting, all solutions, runner regressions, and both example apps. Natural next blocks now that 1–7 exist: `Stream` (pull-based async iteration), `Queue`/`PubSub`, the software-transactional-memory (`TxRef`) family, and a deeper `Schema` block (transforms, branded types).
 
 ## Version note
 

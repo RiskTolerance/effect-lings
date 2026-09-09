@@ -18,6 +18,7 @@
 		"lib/**/*.ts",
 		"exercises/**/*.ts",
 		"solutions/**/*.ts",
+		"starters/**/*.ts",
 		"tests/**/*.ts"
 	],
 	"exclude": ["node_modules", "examples"]

@@ -11,7 +11,7 @@ import {
 	writeFileSync
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 
 const directories: string[] = []
 const children = new Set<ReturnType<typeof Bun.spawn>>()
@@ -36,8 +36,15 @@ function fixture(exercises: Record<string, string>) {
 	})
 	mkdirSync(join(dir, 'exercises'))
 	mkdirSync(join(dir, 'solutions'))
-	for (const [file, source] of Object.entries(exercises))
+	for (const [file, source] of Object.entries(exercises)) {
+		mkdirSync(dirname(join(dir, 'exercises', file)), {
+			recursive: true
+		})
 		writeFileSync(join(dir, 'exercises', file), source)
+	}
+	cpSync(join(dir, 'exercises'), join(dir, 'starters'), {
+		recursive: true
+	})
 	return dir
 }
 
@@ -107,6 +114,80 @@ test('malformed progress is preserved; reset explicitly clears it', async () => 
 		'process.exit(1)'
 	)
 })
+
+test('reset restores edited and deleted exercises, clears progress, and keeps custom files', async () => {
+	const dir = fixture({
+		'01.ts': 'process.exit(1)',
+		'group/02.ts': '// TODO\nprocess.exit(1)'
+	})
+	writeFileSync(join(dir, 'exercises/01.ts'), '// solved')
+	rmSync(join(dir, 'exercises/group'), { recursive: true })
+	writeFileSync(
+		join(dir, 'exercises/custom.ts'),
+		'// my extra exercise'
+	)
+	writeFileSync(join(dir, 'solutions/01.ts'), '// solution')
+	writeFileSync(
+		join(dir, 'progress.json'),
+		JSON.stringify({
+			completed: ['01.ts'],
+			streak: 3,
+			lastCompletedDate: '2026-09-09'
+		})
+	)
+	for (let i = 0; i < 2; i++) {
+		const result = await run(dir, 'reset')
+		expect(result.status).toBe(0)
+		expect(result.output).toContain('Restored 2 exercises')
+		expect(readFileSync(join(dir, 'exercises/01.ts'), 'utf8')).toBe(
+			'process.exit(1)'
+		)
+		expect(
+			readFileSync(join(dir, 'exercises/group/02.ts'), 'utf8')
+		).toBe('// TODO\nprocess.exit(1)')
+		expect(progress(dir)).toEqual({
+			completed: [],
+			streak: 0,
+			lastCompletedDate: ''
+		})
+	}
+	expect(readFileSync(join(dir, 'exercises/custom.ts'), 'utf8')).toBe(
+		'// my extra exercise'
+	)
+	expect(readFileSync(join(dir, 'solutions/01.ts'), 'utf8')).toBe(
+		'// solution'
+	)
+	expect(readFileSync(join(dir, 'starters/01.ts'), 'utf8')).toBe(
+		'process.exit(1)'
+	)
+	expect((await run(dir, 'today')).status).toBe(1)
+})
+
+test('reset recreates a completely deleted exercises directory', async () => {
+	const dir = fixture({ 'group/01.ts': 'process.exit(1)' })
+	rmSync(join(dir, 'exercises'), { recursive: true })
+	expect((await run(dir, 'reset')).status).toBe(0)
+	expect(
+		readFileSync(join(dir, 'exercises/group/01.ts'), 'utf8')
+	).toBe('process.exit(1)')
+})
+
+test.each(['missing', 'empty'])(
+	'reset with %s starters fails without clearing work or progress',
+	async (state) => {
+		const dir = fixture({ '01.ts': '// solved' })
+		writeFileSync(join(dir, 'progress.json'), 'preserve this save')
+		rmSync(join(dir, 'starters'), { recursive: true })
+		if (state === 'empty') mkdirSync(join(dir, 'starters'))
+		expect((await run(dir, 'reset')).status).toBe(1)
+		expect(readFileSync(join(dir, 'exercises/01.ts'), 'utf8')).toBe(
+			'// solved'
+		)
+		expect(readFileSync(join(dir, 'progress.json'), 'utf8')).toBe(
+			'preserve this save'
+		)
+	}
+)
 
 test('verify checks all solutions and matching paths without touching progress', async () => {
 	const dir = fixture({ '01.ts': 'process.exit(1)', '02.ts': '' })
