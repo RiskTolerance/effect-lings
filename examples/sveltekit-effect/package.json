@@ -5,11 +5,11 @@
 	"type": "module",
 	"description": "A SvelteKit app using Effect in load functions, form actions, and a JSON API route — the same service/layer pattern as the Hono example.",
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+		"dev": "bun --bun vite dev",
+		"build": "bun --bun vite build",
+		"preview": "bun --bun vite preview",
+		"prepare": "bun --bun svelte-kit sync",
+		"check": "bun --bun svelte-kit sync && bun --bun svelte-check --tsconfig ./tsconfig.json"
 	},
 	"dependencies": {
 		"effect": "4.0.0-beta.86"

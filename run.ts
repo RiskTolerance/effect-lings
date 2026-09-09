@@ -1,182 +1,276 @@
-// The whole point of this file: remove every decision between you and practice.
-// `bun start` runs the next thing. That's it. No choosing, no setup.
-
-import { spawnSync } from 'node:child_process'
-import {
-	readdirSync,
-	readFileSync,
-	writeFileSync,
-	existsSync
-} from 'node:fs'
+import { readdirSync, existsSync, watch } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, relative, sep } from 'node:path'
+import {
+	currentStreak,
+	emptyProgress,
+	loadProgress,
+	recordCompletion,
+	saveProgress
+} from './lib/progress'
 
 const root = dirname(fileURLToPath(import.meta.url))
 const exercisesDir = join(root, 'exercises')
 const progressFile = join(root, 'progress.json')
-// Under Bun, process.execPath IS the bun binary — spawn it directly to run an
-// exercise. No PATH lookup, no node_modules/.bin, no separate runner to install.
-const bunBin = process.execPath
+const timeoutMs = 10_000
 
-type Progress = {
-	completed: string[]
-	streak: number
-	lastCompletedDate: string
-}
-
-function loadProgress(): Progress {
-	if (!existsSync(progressFile))
-		return { completed: [], streak: 0, lastCompletedDate: '' }
-	try {
-		return JSON.parse(readFileSync(progressFile, 'utf8')) as Progress
-	} catch {
-		return { completed: [], streak: 0, lastCompletedDate: '' }
-	}
-}
-
-function saveProgress(p: Progress): void {
-	writeFileSync(progressFile, JSON.stringify(p, null, 2) + '\n')
-}
-
-function allExercises(): string[] {
-	return readdirSync(exercisesDir, {
+function filesIn(directory: string): string[] {
+	return readdirSync(directory, {
 		recursive: true,
 		withFileTypes: true
 	})
-		.filter((d) => d.isFile() && d.name.endsWith('.ts'))
-		.map((d) =>
-			relative(
-				exercisesDir,
-				join((d as any).parentPath ?? (d as any).path, d.name)
-			)
+		.filter((entry) => entry.isFile() && entry.name.endsWith('.ts'))
+		.map((entry) =>
+			relative(directory, join(entry.parentPath, entry.name))
+				.split(sep)
+				.join('/')
 		)
 		.sort()
 }
 
-function pretty(rel: string): string {
-	return rel.split(sep).join(' › ').replace(/\.ts$/, '')
+const pretty = (file: string) =>
+	file.replaceAll('/', ' › ').replace(/\.ts$/, '')
+const allExercises = () => filesIn(exercisesDir)
+const progress = () => loadProgress(progressFile, allExercises())
+const nextIncomplete = () => {
+	const done = new Set(progress().completed)
+	return allExercises().find((file) => !done.has(file))
 }
 
-function isoDate(d: Date): string {
-	return d.toISOString().slice(0, 10)
+function summary(): void {
+	const p = progress()
+	const total = allExercises().length
+	const filled =
+		total === 0 ? 0 : Math.round((p.completed.length / total) * 24)
+	console.log(
+		`\n🔥 ${currentStreak(p)}-day streak  ·  ${p.completed.length}/${total}  ${'█'.repeat(filled)}${'░'.repeat(24 - filled)}\n`
+	)
 }
 
-function nextIncomplete(p: Progress): string | undefined {
-	const done = new Set(p.completed)
-	return allExercises().find((e) => !done.has(e))
-}
-
-function runFile(rel: string): number {
-	const res = spawnSync(bunBin, [join(exercisesDir, rel)], {
-		stdio: 'inherit'
+async function runFile(
+	file: string,
+	signal?: AbortSignal
+): Promise<boolean> {
+	const child = Bun.spawn([process.execPath, file], {
+		stdout: 'inherit',
+		stderr: 'inherit',
+		stdin: 'inherit'
 	})
-	return res.status ?? 1
-}
-
-function recordCompletion(p: Progress, rel: string): void {
-	if (!p.completed.includes(rel)) p.completed.push(rel)
-	const today = isoDate(new Date())
-	const yesterday = isoDate(new Date(Date.now() - 86_400_000))
-	if (p.lastCompletedDate !== today) {
-		p.streak = p.lastCompletedDate === yesterday ? p.streak + 1 : 1
-		p.lastCompletedDate = today
+	const abort = () => child.kill('SIGKILL')
+	signal?.addEventListener('abort', abort, { once: true })
+	if (signal?.aborted) abort()
+	let timedOut = false
+	const timer = setTimeout(() => {
+		timedOut = true
+		child.kill('SIGKILL')
+	}, timeoutMs)
+	try {
+		const status = await child.exited
+		if (timedOut)
+			console.error(
+				'\nExercise timed out after 10 seconds. Check for an infinite loop or an Effect that never completes.'
+			)
+		return status === 0 && !timedOut && !signal?.aborted
+	} finally {
+		clearTimeout(timer)
+		signal?.removeEventListener('abort', abort)
 	}
-	saveProgress(p)
 }
 
-function bar(done: number, total: number): string {
-	const width = 24
-	const filled = total === 0 ? 0 : Math.round((done / total) * width)
-	return '█'.repeat(filled) + '░'.repeat(width - filled)
-}
-
-function cmdToday(): void {
-	const p = loadProgress()
-	const next = nextIncomplete(p)
-	const all = allExercises()
-
-	if (!next) {
-		console.log(`\n🎉  You've cleared all ${all.length} exercises.`)
+async function practice(
+	file: string,
+	signal?: AbortSignal
+): Promise<boolean> {
+	console.log(`\n▶  ${pretty(file)}\n`)
+	const passed = await runFile(join(exercisesDir, file), signal)
+	if (signal?.aborted) return false
+	if (passed) {
+		saveProgress(progressFile, recordCompletion(progress(), file))
+		summary()
+		const next = nextIncomplete()
 		console.log(
-			`Add another file under exercises/ and keep the streak alive (${p.streak} days).\n`
+			next
+				? `Next: ${pretty(next)}\n`
+				: '🎉 All exercises complete.\n'
 		)
-		return
-	}
-
-	console.log(`\n▶  ${pretty(next)}\n`)
-	const status = runFile(next)
-
-	if (status === 0) {
-		const wasNew = !p.completed.includes(next)
-		recordCompletion(p, next)
-		if (wasNew) {
-			const upcoming = nextIncomplete(p)
-			console.log(
-				`🔥  ${p.streak}-day streak  ·  ${p.completed.length}/${all.length}  ${bar(p.completed.length, all.length)}`
-			)
-			console.log(
-				upcoming
-					? `Next: ${pretty(upcoming)} — run \`bun start\` again when you're ready.\n`
-					: `That was the last one. 🎉\n`
-			)
-		}
 	} else {
 		console.log(
-			`\n— not passing yet. Edit exercises/${next}, then run \`bun start\` again.`
+			`\nEdit exercises/${file} and try again.\nSolution: solutions/${file}\n`
 		)
-		console.log(
-			`   (Or \`bun run watch\` to re-check automatically on every save.)\n`
-		)
-		process.exitCode = 1
 	}
+	return passed
 }
 
-function cmdWatch(): void {
-	const next = nextIncomplete(loadProgress())
-	if (!next) return cmdToday()
+function selectExercise(raw: string | undefined): string | undefined {
+	if (!raw) return undefined
+	const file =
+		raw
+			.replaceAll('\\', '/')
+			.replace(/^exercises\//, '')
+			.replace(/\.ts$/, '') + '.ts'
+	if (!allExercises().includes(file))
+		throw new Error(
+			`Unknown exercise: ${raw}. Run \`bun run list\` for paths.`
+		)
+	return file
+}
+
+async function cmdToday(file = nextIncomplete()): Promise<void> {
+	if (!file) {
+		summary()
+		console.log('🎉 All exercises complete.')
+		return
+	}
+	if (!(await practice(file))) process.exitCode = 1
+}
+
+async function cmdWatch(selected?: string): Promise<void> {
+	let current = selected ?? nextIncomplete()
+	if (!current) return cmdToday()
 	console.log(
-		`\n👀  Watching ${pretty(next)} — save the file to re-check. Ctrl-C to stop.`
+		'👀 Save to re-check. Passing work is saved automatically. Ctrl-C to stop.'
 	)
-	console.log(
-		`   When it goes green, stop and run \`bun start\` to record it.\n`
-	)
-	spawnSync(bunBin, ['--watch', join(exercisesDir, next)], {
-		stdio: 'inherit'
+	let running = false
+	let pending = false
+	let stopped = false
+	let active: AbortController | undefined
+	let timer: ReturnType<typeof setTimeout> | undefined
+	let finish!: () => void
+	const done = new Promise<void>((resolve) => {
+		finish = resolve
 	})
-}
-
-function cmdList(): void {
-	const p = loadProgress()
-	const done = new Set(p.completed)
-	const all = allExercises()
-	console.log(
-		`\n🔥 ${p.streak}-day streak  ·  ${done.size}/${all.length}  ${bar(done.size, all.length)}\n`
-	)
-	let lastGroup = ''
-	for (const e of all) {
-		const group = e.split(sep)[0] ?? ''
-		if (group !== lastGroup) {
-			console.log(`  ${group}`)
-			lastGroup = group
-		}
-		console.log(
-			`    ${done.has(e) ? '✓' : '·'} ${e.split(sep).slice(1).join(sep).replace(/\.ts$/, '')}`
-		)
+	const stop = () => {
+		stopped = true
+		clearTimeout(timer)
+		active?.abort()
+		finish()
 	}
-	console.log('')
+	const run = async () => {
+		if (running || stopped) return
+		running = true
+		pending = false
+		active = new AbortController()
+		try {
+			const passed = await practice(current!, active.signal)
+			if (passed && !selected) {
+				current = nextIncomplete()
+				if (!current) stop()
+				else pending = true
+			}
+		} catch (error) {
+			console.error(error instanceof Error ? error.message : error)
+			process.exitCode = 1
+			stop()
+		} finally {
+			running = false
+			if (pending && !stopped)
+				timer = setTimeout(() => void run(), 100)
+		}
+	}
+	const onSave = (_event: string, filename: string | null) => {
+		if (filename && !filename.endsWith('.ts')) return
+		pending = true
+		active?.abort()
+		clearTimeout(timer)
+		timer = setTimeout(() => void run(), 100)
+	}
+	const watchers = [exercisesDir, join(root, 'lib')].map(
+		(directory) => watch(directory, { recursive: true }, onSave)
+	)
+	for (const watcher of watchers)
+		watcher.on('error', (error) => {
+			console.error(error.message)
+			process.exitCode = 1
+			stop()
+		})
+	process.on('SIGINT', stop)
+	process.on('SIGTERM', stop)
+	try {
+		void run()
+		await done
+	} finally {
+		watchers.forEach((watcher) => watcher.close())
+		process.off('SIGINT', stop)
+		process.off('SIGTERM', stop)
+	}
 }
 
-function cmdReset(): void {
-	saveProgress({ completed: [], streak: 0, lastCompletedDate: '' })
-	console.log('Progress reset. Streak cleared.\n')
+async function verify(): Promise<void> {
+	const exercises = allExercises()
+	const solutionsDir = join(root, 'solutions')
+	const solutions = filesIn(solutionsDir)
+	let failed = 0
+	for (const file of new Set([...exercises, ...solutions])) {
+		console.log(`\n▶  Solution: ${pretty(file)}`)
+		if (
+			!exercises.includes(file) ||
+			!existsSync(join(solutionsDir, file))
+		) {
+			console.error('Missing matching exercise or solution.')
+			failed++
+		} else if (!(await runFile(join(solutionsDir, file)))) failed++
+	}
+	console.log(
+		`\n${solutions.length} solutions checked; ${failed} failures. Progress unchanged.\n`
+	)
+	if (failed) process.exitCode = 1
 }
 
-const cmd = process.argv[2] ?? 'today'
-;(
-	({
-		today: cmdToday,
-		watch: cmdWatch,
-		list: cmdList,
-		reset: cmdReset
-	})[cmd] ?? cmdToday
-)()
+const help = `Usage: bun run.ts <command> [exercise path]
+
+  today         Run the next unsolved exercise (default)
+  run <path>    Practice a specific exercise, including completed ones
+  watch [path]  Re-check on save; record passes and advance automatically
+  list          Show exercise paths, progress, and current streak
+  reset         Clear recorded progress; keep exercise source files
+  verify        Run every reference solution without changing progress
+  help          Show this help
+
+Example: bun run.ts run 03-effect-basics/04-pipe-and-map`
+
+async function main(): Promise<void> {
+	const [command = 'today', path, ...extra] = process.argv.slice(2)
+	if (extra.length || (path && !['run', 'watch'].includes(command)))
+		throw new Error(help)
+	switch (command) {
+		case 'today':
+			return cmdToday()
+		case 'run': {
+			const file = selectExercise(path)
+			if (!file)
+				throw new Error(
+					'Supply an exercise path. Run `bun run list` to see them.'
+				)
+			return cmdToday(file)
+		}
+		case 'watch':
+			return cmdWatch(selectExercise(path))
+		case 'list': {
+			summary()
+			const done = new Set(progress().completed)
+			for (const file of allExercises())
+				console.log(`  ${done.has(file) ? '✓' : '·'} ${file}`)
+			return
+		}
+		case 'reset':
+			saveProgress(progressFile, emptyProgress())
+			console.log(
+				'Progress and streak cleared. Exercise source files are unchanged.'
+			)
+			return
+		case 'verify':
+			return verify()
+		case 'help':
+		case '--help':
+		case '-h':
+			console.log(help)
+			return
+		default:
+			throw new Error(`Unknown command: ${command}\n\n${help}`)
+	}
+}
+
+await main().catch((error) => {
+	console.error(error instanceof Error ? error.message : error)
+	process.exitCode = 1
+})

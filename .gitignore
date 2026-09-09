@@ -1,5 +1,6 @@
 node_modules/
 progress.json
+progress.json.*.tmp
 
 # SvelteKit / Vite build artifacts (examples/sveltekit-effect)
 .svelte-kit/

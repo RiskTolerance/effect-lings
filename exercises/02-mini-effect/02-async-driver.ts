@@ -1,7 +1,7 @@
 import { check, section } from '../../lib/check'
 section('Add async. The driver awaits Async ops before resuming.')
 section(
-	'This is Effect.gen in miniature: yield* is await, the driver is the runtime.'
+	'The driver awaits work and resumes the generator, like a small part of Effect.gen.'
 )
 
 /*

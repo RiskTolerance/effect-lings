@@ -16,7 +16,10 @@ section(
  *   Concept docs: https://effect.website/docs/getting-started/building-pipelines
  */
 
-const fetchUser = Effect.succeed({ name: 'Ada', age: 36 })
+const ada = { name: 'Ada', age: 36 }
+
+const fetchUser: Effect.Effect<typeof ada> = Effect.succeed(ada)
+
 const lookupAge = (name: string) =>
 	Effect.succeed(name === 'Ada' ? 36 : 0)
 

@@ -9,6 +9,8 @@ bun install        # also runs `svelte-kit sync`
 bun dev            # http://localhost:5173
 ```
 
+The scripts explicitly run Vite and the Svelte tools under Bun, so they do not depend on the version of Node installed on your machine.
+
 Open the page to see todos loaded by an Effect and add one through the form. Or hit the JSON API:
 
 ```bash

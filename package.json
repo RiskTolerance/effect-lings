@@ -12,7 +12,9 @@
 		"reset": "bun run.ts reset",
 		"typecheck": "tsc --noEmit",
 		"lint": "prettier --check .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"test": "bun test tests",
+		"verify": "bun run.ts verify"
 	},
 	"dependencies": {
 		"effect": "4.0.0-beta.86"

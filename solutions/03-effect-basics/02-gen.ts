@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import { check, section } from '../../lib/check'
 section(
-	'Effect.gen IS the driver you built. yield* pulls a value out of an Effect.'
+	'Effect.gen uses the same generator mechanics as your driver. yield* binds an Effect result.'
 )
 
 const add = (a: number, b: number) => Effect.succeed(a + b)

@@ -1,7 +1,7 @@
 import { Effect } from 'effect'
 import { check, section } from '../../lib/check'
 section(
-	'Lifting real work in: sync (never throws), try (might throw), tryPromise (async, might reject).'
+	'Lifting real work in: sync (defers work), try (captures throws), tryPromise (captures rejections).'
 )
 
 /*
@@ -27,9 +27,11 @@ const tick: Effect.Effect<number> = Effect.sync(() => 0) // fix me
 const parse = (s: string): Effect.Effect<unknown, string> =>
 	Effect.succeed(null) // fix me
 
-// 📝 TODO: wrap a promise with Effect.tryPromise, mapping a rejection to "bad".
+// 📝 TODO: use Effect.tryPromise with makePromise as its `try` callback,
+//          mapping a rejection to "bad". Create the Promise inside the callback
+//          so each run starts fresh work, including retries.
 const fromPromise = (
-	p: Promise<number>
+	makePromise: () => Promise<number>
 ): Effect.Effect<number, string> => Effect.succeed(0) // fix me
 
 // ---- checks (don't edit) ----
@@ -55,15 +57,31 @@ check(
 )
 check(
 	'tryPromise resolves to the value',
-	await Effect.runPromise(fromPromise(Promise.resolve(9))),
+	await Effect.runPromise(fromPromise(() => Promise.resolve(9))),
 	9
 )
 check(
 	'tryPromise maps a rejection',
 	await Effect.runPromise(
-		fromPromise(Promise.reject('x')).pipe(
+		fromPromise(() => Promise.reject('x')).pipe(
 			Effect.catch((e) => Effect.succeed(e))
 		)
 	),
 	'bad'
+)
+
+let promiseCalls = 0
+const fresh = fromPromise(() => {
+	promiseCalls++
+	return Promise.resolve(promiseCalls)
+})
+check(
+	'constructing an async Effect does not start the Promise',
+	promiseCalls,
+	0
+)
+check(
+	'each run creates fresh async work',
+	[await Effect.runPromise(fresh), await Effect.runPromise(fresh)],
+	[1, 2]
 )

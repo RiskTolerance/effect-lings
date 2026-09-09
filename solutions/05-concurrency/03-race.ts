@@ -1,21 +1,50 @@
-import { Duration, Effect } from 'effect'
+import { Effect } from 'effect'
 import { check, section } from '../../lib/check'
 section(
-	'race runs two Effects at once; the first to finish wins and the loser is interrupted.'
+	'race waits for the first SUCCESS; raceFirst takes the first completion, including failure.'
 )
 
-const fast = Effect.succeed('fast')
-const slow = Effect.succeed('slow').pipe(
-	Effect.delay(Duration.millis(50))
+/*
+ * Before you start:
+ * - `race` waits for a success even if another contender fails first. It fails
+ *   only when both fail. `raceFirst` can fail as soon as one contender fails.
+ * - Both interrupt remaining contenders once a winner is selected.
+ * - Try predicting both outcomes before running the checks.
+ * - API: https://effect-ts.github.io/effect/effect/Effect.ts.html
+ */
+
+const fastFailure = Effect.fail('offline')
+const slowSuccess = Effect.succeed('online').pipe(
+	Effect.delay('10 millis')
 )
 
-// race returns the first to complete. `slow` is delayed 50ms, so `fast` wins and
-// the still-pending `slow` fiber is interrupted.
-const program: Effect.Effect<string> = Effect.race(fast, slow)
+// 📝 TODO: race fastFailure against slowSuccess with Effect.race.
+const firstSuccess: Effect.Effect<string, string> = Effect.race(
+	fastFailure,
+	slowSuccess
+)
+
+// 📝 TODO: use Effect.raceFirst with the same two contenders.
+const firstCompletion: Effect.Effect<string, string> =
+	Effect.raceFirst(fastFailure, slowSuccess)
 
 // ---- checks (don't edit) ----
+const describe = (effect: Effect.Effect<string, string>) =>
+	Effect.runPromise(
+		effect.pipe(
+			Effect.match({
+				onFailure: (error) => `failure: ${error}`,
+				onSuccess: (value) => `success: ${value}`
+			})
+		)
+	)
 check(
-	"race yields the faster Effect's result",
-	await Effect.runPromise(program),
-	'fast'
+	'race keeps waiting after the early failure',
+	await describe(firstSuccess),
+	'success: online'
+)
+check(
+	'raceFirst preserves the early failure',
+	await describe(firstCompletion),
+	'failure: offline'
 )

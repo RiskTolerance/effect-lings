@@ -1,5 +1,6 @@
 import { Effect, Data } from 'effect'
 import { check, section } from '../../lib/check'
+import { error } from 'node:console'
 section(
 	'The E channel: errors live in the type. Data.TaggedError = typed, matchable failures.'
 )
@@ -24,8 +25,10 @@ class TooSmall extends Data.TaggedError('TooSmall')<{
 //          Effect.fail(new TooSmall({ value: n })).
 //          Tip: annotate the return type as `Effect.Effect<number, TooSmall>`
 //          so the success/failure branches unify into one Effect.
-const ensurePositive = (n: number): Effect.Effect<number, TooSmall> =>
-	Effect.succeed(n) // fix me
+const ensurePositive = (
+	n: number
+): Effect.Effect<number, TooSmall> =>
+	n > 0 ? Effect.succeed(n) : Effect.fail(new TooSmall({ value: n }))
 
 // ---- checks (don't edit) ----
 check(
@@ -36,7 +39,12 @@ check(
 
 // 📝 TODO: recover from the failure using .pipe(Effect.catchTag("TooSmall", ...))
 //          returning `too small: <value>`.
-const recovered = ensurePositive(-3) // wrap me with catchTag
+const recovered = ensurePositive(-3).pipe(
+	Effect.catchTag('TooSmall', (e) =>
+		Effect.succeed(`too small: ${e.value}`)
+	)
+) // wrap me with catchTag
+
 check(
 	'catchTag recovers by tag',
 	Effect.runSync(recovered),

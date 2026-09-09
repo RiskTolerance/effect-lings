@@ -9,7 +9,11 @@ const value = Effect.runSync(program) // execute it
 
 check('runSync of succeed(42)', value, 42)
 check(
-	"succeed is lazy: it's an object, not the value",
+	'succeed creates an Effect description',
 	typeof program === 'object',
 	true
 )
+
+// `succeed(value)` stores an already-computed value. JavaScript still evaluates
+// arguments immediately: Effect.succeed(console.log('hi')) logs at construction.
+// Use Effect.sync(() => ...) to defer actual work (exercise 05).

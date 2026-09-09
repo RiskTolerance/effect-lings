@@ -1,31 +1,47 @@
-import { Duration, Effect } from 'effect'
+import { Effect } from 'effect'
 import { check, section } from '../../lib/check'
 section(
-	'race runs two Effects at once; the first to finish wins and the loser is interrupted.'
+	'race waits for the first SUCCESS; raceFirst takes the first completion, including failure.'
 )
 
 /*
  * Before you start:
- * - Mental model: `race` starts both effects, completes with the first result,
- *   and interrupts the loser so it does not keep running useless work.
- * - Shape to look for: combine `fast` and `slow` into one Effect whose success
- *   value is whichever finishes first.
- * - Docs: v4 API reference:
- *   https://effect-ts.github.io/effect/effect/Effect.ts.html
- *   Concept docs: https://effect.website/docs/concurrency/basic-concurrency
+ * - `race` waits for a success even if another contender fails first. It fails
+ *   only when both fail. `raceFirst` can fail as soon as one contender fails.
+ * - Both interrupt remaining contenders once a winner is selected.
+ * - Try predicting both outcomes before running the checks.
+ * - API: https://effect-ts.github.io/effect/effect/Effect.ts.html
  */
 
-const fast = Effect.succeed('fast')
-const slow = Effect.succeed('slow').pipe(
-	Effect.delay(Duration.millis(50))
+const fastFailure = Effect.fail('offline')
+const slowSuccess = Effect.succeed('online').pipe(
+	Effect.delay('10 millis')
 )
 
-// 📝 TODO: race `fast` against `slow` with Effect.race so the winner is "fast".
-const program: Effect.Effect<string> = Effect.succeed('') // fix me
+// 📝 TODO: race fastFailure against slowSuccess with Effect.race.
+const firstSuccess: Effect.Effect<string, string> = Effect.succeed('') // fix me
+
+// 📝 TODO: use Effect.raceFirst with the same two contenders.
+const firstCompletion: Effect.Effect<string, string> =
+	Effect.succeed('') // fix me
 
 // ---- checks (don't edit) ----
+const describe = (effect: Effect.Effect<string, string>) =>
+	Effect.runPromise(
+		effect.pipe(
+			Effect.match({
+				onFailure: (error) => `failure: ${error}`,
+				onSuccess: (value) => `success: ${value}`
+			})
+		)
+	)
 check(
-	"race yields the faster Effect's result",
-	await Effect.runPromise(program),
-	'fast'
+	'race keeps waiting after the early failure',
+	await describe(firstSuccess),
+	'success: online'
+)
+check(
+	'raceFirst preserves the early failure',
+	await describe(firstCompletion),
+	'failure: offline'
 )

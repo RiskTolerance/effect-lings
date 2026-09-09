@@ -17,7 +17,8 @@
 		"run.ts",
 		"lib/**/*.ts",
 		"exercises/**/*.ts",
-		"solutions/**/*.ts"
+		"solutions/**/*.ts",
+		"tests/**/*.ts"
 	],
 	"exclude": ["node_modules", "examples"]
 }
