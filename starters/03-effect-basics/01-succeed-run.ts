@@ -31,4 +31,4 @@ check(
 
 // `succeed(value)` stores an already-computed value. JavaScript still evaluates
 // arguments immediately: Effect.succeed(console.log('hi')) logs at construction.
-// Use Effect.sync(() => ...) to defer actual work (exercise 05).
+// Use Effect.sync(() => ...) to defer actual work (09-sync.ts).

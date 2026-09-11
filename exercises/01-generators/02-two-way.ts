@@ -18,7 +18,9 @@ section(
 //          and return `sum is <a+b>`. Note the third Generator type param is
 //          the type of what gets fed back IN.
 function* conversation(): Generator<string, string, number> {
-	return '' // fix me
+	const a = yield 'give me a number'
+	const b = yield 'give me another'
+	return `sum is ${a + b}`
 }
 
 // ---- checks (don't edit) ----

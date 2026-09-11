@@ -14,7 +14,9 @@ section(
 
 // 📝 TODO: make this generator yield 1, then 2, then 3.
 function* count(): Generator<number> {
-	yield 0 // fix me
+	yield 1
+	yield 2
+	yield 3
 }
 
 // ---- checks (don't edit) ----

@@ -42,8 +42,8 @@ bun run verify    # run all reference solutions; leave progress untouched
 bun run.ts help   # all commands
 
 # Revisit a particular lesson (the .ts suffix is optional):
-bun run.ts run 03-effect-basics/04-pipe-and-map
-bun run.ts watch 03-effect-basics/04-pipe-and-map
+bun run.ts run 03-effect-basics/04-pipe
+bun run.ts watch 03-effect-basics/04-pipe
 ```
 
 **`bun run reset` overwrites your edits to the bundled exercises** with clean, unsolved copies from `starters/`, restores deleted exercise files, and clears progress and streaks. It runs immediately without a confirmation prompt. Solutions and extra files without a matching starter are left alone.
@@ -69,10 +69,10 @@ Stuck for more than a few minutes? The full answer is in `solutions/` mirroring 
 
 It's deliberately bottom-up. The point is that **Effect's "magic" is mechanics you'll have already built by hand**:
 
-1. **`01-generators`** — `yield`, the two-way `.next(value)` channel, and `yield*`. The actual primitive. Most people use Effect for months without understanding this; you'll start here.
-2. **`02-mini-effect`** — build a ~15-line generator-driven interpreter that runs sync and async "ops." This models one part of `Effect.gen`: a driver executes descriptions and feeds results back into a generator. Real Effect adds typed failures, services, scheduling, interruption, and resource lifetimes; the tiny driver does not implement those. `yield*` is JavaScript delegation, which Effect uses to hand work to its runtime.
-3. **`03-effect-basics`** — real Effect now. `succeed`/`runSync`, `Effect.gen` (which you'll recognize as the thing you just built), the typed error channel, then `pipe`/`map`/`flatMap`, lifting work in (`sync`/`try`/`tryPromise`), error handling (`catch`/`match`/`result`), and `Ref` state. A final lesson separates expected failures from defects and inspects `Exit` outcomes.
-4. **`04-context`** — the **R channel**: services as interfaces in the context, `Layer.succeed`/`Layer.effect` to provide them, and layers that depend on other layers. This is Effect's dependency injection — the thing the example apps are built on.
+1. **`01-generators`** — `yield`, the two-way `.next(value)` channel, delegating with `yield*`, and capturing the delegated return value. The actual primitive. Most people use Effect for months without understanding this; you'll start here.
+2. **`02-mini-effect`** — [five small exercises](exercises/02-mini-effect/README.md): describe work, run one request, chain requests, build a loop, and add async. This models one part of `Effect.gen`: a driver executes descriptions and feeds results back into a generator. Real Effect adds typed failures, services, scheduling, interruption, and resource lifetimes; the tiny driver does not implement those. `yield*` is JavaScript delegation, which Effect uses to hand work to its runtime.
+3. **`03-effect-basics`** — real Effect now. `succeed`/`runSync` and `Effect.gen`, then separate drills for `map`, `pipe`, and `flatMap`. Next: fail with a value, recover with `catch`, and select tagged errors. `sync`, `try`, and `tryPromise` each get a lesson, followed by individual fallback, `match`, and `Result` exercises, then `Ref` state. A final lesson separates expected failures from defects and inspects `Exit` outcomes.
+4. **`04-context`** — the **R channel**: first read a supplied service, then provide an implementation yourself, then package it with `Layer.succeed`. Continue with `Layer.effect` to build a service and `Layer.provide` to connect its dependencies. This is Effect's dependency injection — the thing the example apps are built on.
 5. **`05-concurrency`** — where fibers earn their keep: `Effect.all` (with a concurrency option), `fork`/`Fiber.join`, and the difference between `race` (first success) and `raceFirst` (first completion).
 6. **`06-scheduling`** — `retry` and `repeat` driven by a `Schedule` (`recurs`, and the building block for backoff/spacing).
 7. **`07-resources`** — `acquireRelease` + scopes: cleanup on success, failure, and interruption. The checks wait for acquisition before interrupting a fiber, then verify that release finished.

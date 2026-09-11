@@ -14,6 +14,8 @@ section(
  *   Concept docs: https://effect.website/docs/getting-started/using-generators
  */
 
+// Like 04-delegated-return: yield* forwards work and evaluates to its answer.
+// Effect values support delegation; Effect.gen coordinates the steps.
 const add = (a: number, b: number) => Effect.succeed(a + b)
 
 // 📝 TODO: inside the gen, yield* Effect.succeed(10) into x,

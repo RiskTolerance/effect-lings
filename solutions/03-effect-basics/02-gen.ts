@@ -4,6 +4,8 @@ section(
 	'Effect.gen uses the same generator mechanics as your driver. yield* binds an Effect result.'
 )
 
+// Like 04-delegated-return: yield* forwards work and evaluates to its answer.
+// Effect values support delegation; Effect.gen coordinates the steps.
 const add = (a: number, b: number) => Effect.succeed(a + b)
 
 const program = Effect.gen(function* () {

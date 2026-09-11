@@ -258,7 +258,7 @@ const help = `Usage: bun run.ts <command> [exercise path]
   verify        Run every reference solution without changing progress
   help          Show this help
 
-Example: bun run.ts run 03-effect-basics/04-pipe-and-map`
+Example: bun run.ts run 03-effect-basics/04-pipe`
 
 async function main(): Promise<void> {
 	const [command = 'today', path, ...extra] = process.argv.slice(2)
